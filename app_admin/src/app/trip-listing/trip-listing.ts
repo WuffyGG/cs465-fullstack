@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { Trip } from '../models/trip';
 import { TripData } from '../services/trip-data';
 import { TripCard } from '../trip-card/trip-card';
-import { Router } from '@angular/router';
-
-import { ChangeDetectorRef } from '@angular/core';
+import { Authentication } from '../services/authentication';
 
 @Component({
   selector: 'app-trip-listing',
@@ -22,16 +21,22 @@ export class TripListing implements OnInit {
   message: string = '';
 
   constructor(
-  private tripDataService: TripData,
-  private cdr: ChangeDetectorRef,
-  private router: Router
-) {
-  console.log('trip-listing constructor');
-}
+    private tripDataService: TripData,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private authenticationService: Authentication
+  ) {
+    console.log('trip-listing constructor');
+  }
 
-public addTrip(): void {
-  this.router.navigate(['add-trip']);
-}
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
+  }
+
+  public addTrip(): void {
+    if (!this.isLoggedIn()) return;
+    this.router.navigate(['add-trip']);
+  }
 
   private getStuff(): void {
     this.tripDataService.getTrips()
